@@ -1,0 +1,17 @@
+---
+driver:
+  name: vagrant
+
+provisioner:
+  name: chef_zero
+
+platforms:
+  - name: ubuntu-12.04
+  - name: centos-6.5
+  - name: fedora-19
+
+suites:
+  - name: default
+    run_list:
+      - recipe[openvpn2::default]
+    attributes:
