@@ -1,5 +1,3 @@
-package 'unzip'
-
 remote_file "#{Chef::Config[:file_cache_path]}/authority.zip" do
   source(node['openvpn2']['authority']['url'])
 end
@@ -10,6 +8,7 @@ end
 
 execute 'init-authority' do
   command "authority init #{node['openvpn2']['key_dir']}"
+  not_if { ::File.exists?("#{node['openvpn2']['key_dir']}/.authority") }
 end
 
 template "#{node['openvpn2']['key_dir']}/.authority/config" do

@@ -1,0 +1,61 @@
+<%
+  begin
+    require 'dotenv'
+    Dotenv.load('.env','.env.local')
+  rescue LoadError
+    $stderr.puts "warning: could not load dotenv gem, variables in .env will be ignored"
+  end
+
+  def tf_output(region, var)
+    state = "test/terraform/#{region}.tfstate"
+    if File.exists?(state)
+      return `terraform output -state=#{state} #{var}`
+    end
+    nil
+  end
+%>
+
+---
+driver:
+  name: ec2
+  flavor_id: t2.small
+  aws_access_key_id: <%= ENV['AWS_ACCESS_KEY']  %>
+  aws_secret_access_key: <%= ENV['AWS_SECRET_KEY'] %>
+  aws_ssh_key_id: openvpn2-cookbook-deploy
+  ssh_key: test/terraform/insecure
+  require_chef_omnibus: true
+  ssh_timeout: 10
+  ssh_retries: 5
+  tags:
+    Name: test-kitchen-openvpn2-<%= ENV['USER'] %> <%= Time.now.to_i %>
+
+provisioner:
+  name: chef_zero
+
+platforms:
+  - name: california # ubuntu 14.04
+    driver:
+      flavor_id: t2.small
+      image_id: ami-d99a9a9c 
+      region: us-west-1
+      availability_zone: us-west-1b
+      associate_public_ip: true
+      security_group_ids: [<%= tf_output "us-west-1", "sg.id" %>]
+      subnet_id: <%= tf_output "us-west-1", "subnet.public.id" %>
+  - name: virginia # ubuntu 14.04
+    driver:
+      driver_plugin: ec2
+      flavor_id: t2.small
+      image_id: ami-4a915c22
+      region: us-east-1
+      availability_zone: us-east-1b
+      associate_public_ip: true
+      security_group_ids: [<%= tf_output "us-east-1", "sg.id" %>]
+      subnet_id: <%= tf_output "us-east-1", "subnet.public.id" %>
+
+suites:
+  - name: default
+    run_list:
+      - recipe[openvpn2::default]
+    data_bags_path: "test/data_bags"
+    attributes: {}

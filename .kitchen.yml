@@ -6,12 +6,12 @@ provisioner:
   name: chef_zero
 
 platforms:
-  - name: ubuntu-12.04
-  - name: centos-6.5
-  - name: fedora-19
+  - name: ubuntu-14.04
+  - name: centos-6.4
 
 suites:
   - name: default
     run_list:
       - recipe[openvpn2::default]
-    attributes:
+    data_bags_path: "test/data_bags"
+    attributes: {}

@@ -7,4 +7,8 @@ else
   fail "The package installation method for `#{node['platform']} is not supported.`"
 end
 
-package('openvpn')
+%w(unzip openvpn).each do |pkg|
+  package(pkg) do
+    action :install
+  end
+end

@@ -26,6 +26,8 @@ default['openvpn2'].tap do |openvpn|
     config['ca']    = "#{node['openvpn2']['key_dir']}/certs/ca.crt"
     config['cert']  = "#{node['openvpn2']['key_dir']}/certs/server.crt"
     config['key']   = "#{node['openvpn2']['key_dir']}/keys/server.key"
+    config['dh']    = "#{node['openvpn2']['key_dir']}/dh.pem"
+    config['dev']   =  node['openvpn2']['type'] == 'server-bridge' ? 'tap0' : 'tun0'
   end
 
   # key provisioner (authority) config

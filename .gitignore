@@ -6,7 +6,8 @@ Berksfile.lock
 \#*#
 .*.sw[a-z]
 *.un~
-
+.env
+.env.local
 # Bundler
 Gemfile.lock
 bin/*
@@ -14,3 +15,8 @@ bin/*
 
 .kitchen/
 .kitchen.local.yml
+
+*.tfstate
+test/data/*
+test/terraform/*.backup
+test/terraform/*.tfstate.backup
