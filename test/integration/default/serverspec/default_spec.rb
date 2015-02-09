@@ -13,5 +13,4 @@ describe 'openvpn2::default' do
   describe user('openvpn') do
     it { should belong_to_group('openvpn') }
   end
-
 end
