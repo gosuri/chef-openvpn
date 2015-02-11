@@ -65,6 +65,7 @@ resource "aws_route_table_association" "public" {
 
 resource "aws_security_group" "default" { 
   name = "${var.name}"
+  vpc_id = "${aws_vpc.default.id}"
   description = "Security group to test ${var.name}"
   ingress {
     from_port = 443
@@ -74,15 +75,40 @@ resource "aws_security_group" "default" {
   }
 
   ingress {
+    from_port = 1194
+    to_port = 1194
+    protocol = "udp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
     from_port = 22
     to_port = 22
     protocol = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  
+  /* ping */
+
+  ingress {
+    from_port   = "-1"
+    to_port     = "-1"
+    protocol    = "icmp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
   tags {
     Name = "${var.name}"
   }
+}
+
+resource "aws_s3_bucket" "default" {
+  bucket = "${var.name}-${var.region}"
+  acl = "private"
+}
+
+resource "aws_eip" "vpn" {
+  vpc = true
 }
 
 output "region" {
@@ -97,10 +123,22 @@ output "subnet.public.id" {
   value = "${aws_subnet.public.id}"
 }
 
+output "subnet.public.cidr" {
+  value = "${aws_subnet.public.cidr_block}"
+}
+
 output "ssh_key.name" {
   value = "${aws_key_pair.default.key_name}"
 }
 
 output "sg.id" {
   value = "${aws_security_group.default.id}"
+}
+
+output "eip.vpn" {
+  value = "${aws_eip.vpn.public_ip}"
+}
+
+output "s3_bucket" {
+  value = "${aws_s3_bucket.default.id}"
 }

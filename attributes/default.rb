@@ -9,13 +9,23 @@ default['openvpn2'].tap do |openvpn|
   openvpn['subnet']   = "10.8.0.0"
   openvpn['netmask']  = "255.255.0.0"
 
+  openvpn['type']     = nil
+  openvpn['proto']    = 'udp'
+  openvpn['port']     = '1194'
+  openvpn['gateway']  = node[:ipaddress]
+
+  openvpn['users_databag']  = "users"
+  openvpn['databag_search_query']  = "*:*"
+
   # openvpn server config
   openvpn['config'].tap do |config|
     config['local']           = node['ipaddress']
-    config['proto']           = 'udp'
-    config['port']            = '1194'
+    config['proto']           = node['openvpn2']['proto']
+    config['port']            = node['openvpn2']['port']
     config['keepalive']       = '10 120'
+    config['comp-lzo']        = ""
     config['log']             = '/var/log/openvpn.log'
+    config['status']          = '/var/log/openvpn-status.log'
     config['routes']          = nil
     config['script-security'] = 2
     config['server']          = "#{node['openvpn2']['subnet']} #{node['openvpn2']['netmask']}"

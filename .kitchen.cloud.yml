@@ -13,17 +13,22 @@
     end
     nil
   end
+
+  EAST_ROUTES = '10.253.0.0 255.255.0.0'
+  WEST_ROUTES = '10.254.0.0 255.255.0.0'
 %>
 
 ---
 driver:
   name: ec2
-  flavor_id: t2.small
+  flavor_id: t1.micro
   aws_access_key_id: <%= ENV['AWS_ACCESS_KEY']  %>
   aws_secret_access_key: <%= ENV['AWS_SECRET_KEY'] %>
   aws_ssh_key_id: openvpn2-cookbook-deploy
   ssh_key: test/terraform/insecure
-  require_chef_omnibus: true
+  username: ubuntu
+  require_chef_omnibus: 12.0.3
+  interface: dns
   ssh_timeout: 10
   ssh_retries: 5
   tags:
@@ -33,29 +38,51 @@ provisioner:
   name: chef_zero
 
 platforms:
-  - name: california # ubuntu 14.04
-    driver:
-      flavor_id: t2.small
-      image_id: ami-d99a9a9c 
+  - name: ubuntu # ubuntu 14.04
+
+suites:
+  - name: california
+    driver_config:
+      image_id: ami-6c9d8629
       region: us-west-1
       availability_zone: us-west-1b
       associate_public_ip: true
       security_group_ids: [<%= tf_output "us-west-1", "sg.id" %>]
       subnet_id: <%= tf_output "us-west-1", "subnet.public.id" %>
-  - name: virginia # ubuntu 14.04
-    driver:
-      driver_plugin: ec2
-      flavor_id: t2.small
-      image_id: ami-4a915c22
+    run_list:
+      - recipe[openvpn2-test::default]
+    data_bags_path: "test/data_bags"
+    attributes: 
+      eip: <%= tf_output "us-west-1", "eip.vpn" %>
+      california_ip: <%= tf_output "us-east-1", "eip.vpn" %>
+      aws_access_key_id: <%= ENV['AWS_ACCESS_KEY']  %>
+      aws_secret_access_key: <%= ENV['AWS_SECRET_KEY'] %>
+      aws_region: us-west-1
+      s3_bucket: <%= tf_output "us-east-1", "s3_bucket" %>
+      routes: <%= WEST_ROUTES %>
+      openvpn2:
+        config:
+          push: "'route <%= WEST_ROUTES %>'"
+  - name: virginia
+    driver_config:
+      image_id: ami-3cf8b154
       region: us-east-1
       availability_zone: us-east-1b
       associate_public_ip: true
       security_group_ids: [<%= tf_output "us-east-1", "sg.id" %>]
       subnet_id: <%= tf_output "us-east-1", "subnet.public.id" %>
-
-suites:
-  - name: default
     run_list:
-      - recipe[openvpn2::default]
+      - recipe[openvpn2-test::default]
     data_bags_path: "test/data_bags"
-    attributes: {}
+    attributes:
+      routes: <%= EAST_ROUTES %>
+      region_name: virginia
+      eip: <%= tf_output "us-east-1", "eip.vpn" %>
+      s3_bucket: <%= tf_output "us-east-1", "s3_bucket" %>
+      virginia_ip: <%= tf_output "us-west-1", "eip.vpn" %>
+      aws_access_key_id: <%= ENV['AWS_ACCESS_KEY']  %>
+      aws_secret_access_key: <%= ENV['AWS_SECRET_KEY'] %>
+      aws_region: us-east-1
+      openvpn2:
+        config:
+          push: "'route <%= EAST_ROUTES %>'"

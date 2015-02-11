@@ -13,7 +13,6 @@ supports 'fedora', '>= 19.0'
 supports 'redhat', '>= 6.0'
 supports 'ubuntu', '>= 12.04'
 
-depends 'chef-sugar', '~> 2.5.0'
 depends 'apt'
 depends 'yum-epel'
 depends 'runit'
