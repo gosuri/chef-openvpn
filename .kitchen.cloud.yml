@@ -62,7 +62,7 @@ suites:
       routes: <%= WEST_ROUTES %>
       openvpn2:
         config:
-          push: "'route <%= WEST_ROUTES %>'"
+          push: ['route <%= WEST_ROUTES %>']
   - name: virginia
     driver_config:
       image_id: ami-3cf8b154
@@ -85,4 +85,4 @@ suites:
       aws_region: us-east-1
       openvpn2:
         config:
-          push: "'route <%= EAST_ROUTES %>'"
+          push: ['route <%= EAST_ROUTES %>']
