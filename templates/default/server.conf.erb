@@ -5,7 +5,7 @@
 <% next if value.nil? -%>
 <% if value.is_a?(Array) %>
   <% value.each do |item| %>
-<%= key %> '<%= item %>'
+<%= key %> <%= item %>
   <% end %>
   <% next %>
 <% end %>
