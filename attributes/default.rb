@@ -12,7 +12,8 @@ default['openvpn2'].tap do |openvpn|
   openvpn['type']     = nil
   openvpn['proto']    = 'udp'
   openvpn['port']     = '1194'
-  openvpn['gateway']  = node[:ipaddress]
+  openvpn['gateway']  = nil
+  openvpn['gateways'] = []
 
   openvpn['users_databag']  = "users"
   openvpn['databag_search_query']  = "*:*"

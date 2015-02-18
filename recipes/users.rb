@@ -5,6 +5,10 @@ rescue NameError
   return false
 end
 
+if node['openvpn2']['gateway'] == nil && node['openvpn2']['gateways'].size == 0
+  Chef::Log.fatal("Either node['openvpn2']['gateway'] or node['openvpn2']['gateways'] should be set to generate client configuration.")
+end
+
 if Chef::Config[:solo] && !solo_search_installed?
   Chef::Log.fatal('Install chef-solo-search cookbook to create users')
 else
