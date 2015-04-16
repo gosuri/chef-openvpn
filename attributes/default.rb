@@ -42,7 +42,7 @@ default['openvpn2'].tap do |openvpn|
   end
 
   # key provisioner (authority) config
-  openvpn['authority']['version'] = "0.1.0.dev"
+  openvpn['authority']['version'] = "0.1.3"
   openvpn['authority']['url'] = "http://dl.bintray.com/ovrclk/pkgs/authority_#{node['openvpn2']['authority']['version']}_linux_amd64.zip"
   openvpn['authority']['defaults'].tap do |k|
     k['root_domain']  = "authority.root"
