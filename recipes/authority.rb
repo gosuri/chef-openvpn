@@ -1,5 +1,5 @@
 remote_file "#{Chef::Config[:file_cache_path]}/authority.zip" do
-  source(node['openvpn2']['authority']['url'])
+  source "http://dl.bintray.com/ovrclk/pkgs/authority_#{node['openvpn2']['authority']['version']}_linux_amd64.zip"
 end
 
 execute 'extract-authority' do
